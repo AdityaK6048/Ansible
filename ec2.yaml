@@ -1,21 +1,24 @@
-           
- ---
+---
 - name: Provisioning a new EC2 instance and security group
   hosts: localhost
   connection: local
   gather_facts: False
   tags: provisioning
+
   pre_tasks:
     - name: Gather facts
       setup:
+
     - name: Print python version
       debug:
-      msg: "Using Python {{ ansible_python_version }}"
+        msg: "Using Python {{ ansible_python_version }}"
+
     - name: Install dependencies
       shell: "/usr/bin/python3.10 -m pip install {{ item }}"
       loop:
-       - boto3
-       - botocore
+        - boto3
+        - botocore
+
   vars:
     ansible_python_interpreter: /usr/bin/python3.10
     keypair: cicd
@@ -28,6 +31,7 @@
     security_group: ec2-security-group
     tag_name:
       Name: Aj-ec2
+
   tasks:
     - name: Create a security group
       amazon.aws.ec2_group:
@@ -58,14 +62,8 @@
         rules_egress:
           - proto: all
             cidr_ip: 0.0.0.0/0
-          - proto: tcp
-            from_port: 443
-            to_port: 443
-            cidr_ip: 0.0.0.0/0
-        rules_egress:
-          - proto: all
-            cidr_ip: 0.0.0.0/0
       register: basic_firewall
+
     - name: Launch the new EC2 Instance
       amazon.aws.ec2_instance:
         security_group: "{{ security_group }}"
@@ -84,4 +82,3 @@
           sudo systemctl enable docker
           sudo docker run -d --name 2048 -p 3000:3000 adityak9029/2048:latest
       register: ec2
--- INSERT --                
